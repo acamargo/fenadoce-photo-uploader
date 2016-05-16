@@ -19,13 +19,13 @@ require 'base64'
 require 'date'
 
 if File.exist? 'uploader.yml'
-  config = YAML.load('uploader.yml')
+  config = YAML.load_file('uploader.yml')
 else
   puts "Configure o uploader.yml com as credenciais de acesso a API do site ;-)"
   exit 1
 end
 
-photos_dir = ARGV[0] || '.'
+photos_dir = File.expand_path(ARGV[0] || '.')
 
 uploaded_dir = photos_dir + '/uploaded'
 FileUtils.mkdir_p uploaded_dir unless File.exists? uploaded_dir
