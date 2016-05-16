@@ -20,8 +20,8 @@ require 'date'
 if File.exist? 'uploader.yml'
   config = YAML.load('uploader.yml')
 else
-  puts "Falta uploader.yml"
-  exit 0
+  puts "Configure o uploader.yml com as credenciais de acesso a API do site ;-)"
+  exit 1
 end
 
 photos_dir = ARGV[0] || '.'
