@@ -13,6 +13,7 @@
 require 'yaml'
 require 'fileutils'
 require 'net/http'
+require 'net/https'
 require 'uri'
 require 'base64'
 require 'date'
@@ -32,8 +33,10 @@ FileUtils.mkdir_p uploaded_dir unless File.exists? uploaded_dir
 api_endpoint = "https://www.fenadoce.com.br/api/v1/realidade_aumentada_galeria_de_fotos.json"
 uri = URI(api_endpoint)
 
+RootCA = './cacert.pem'
+
 while true
-    puts 
+    puts
     puts DateTime.now
     Dir[photos_dir+'/*.JPG'].each do |photo_path|
         puts photo_path
@@ -50,13 +53,16 @@ while true
         params['horario'] = photo_day+'/'+photo_month+'/'+photo_year+' '+photo_hour+':'+photo_minute+':'+photo_second
         params['imagem[_][upload]'] = 'remote'
         params['imagem[_][url]'] = 'data:image/jpeg;base64,'+Base64.encode64(File.read(photo_path).chop)
-        
+
         request = Net::HTTP::Post.new(uri.path)
         request.basic_auth config['username'], config['password']
         request.set_form_data(params)
 
         http = Net::HTTP.new(uri.host, uri.port)
         http.use_ssl = true
+        http.ca_path = RootCA
+        http.verify_mode = OpenSSL::SSL::VERIFY_PEER
+        http.verify_depth = 5
         response = http.start {|http| http.request(request)}
         puts response.code
         if response.code.to_i == 201
@@ -64,7 +70,7 @@ while true
             FileUtils.mkdir_p destination_path unless File.exists? destination_path
             FileUtils.mv photo_path, destination_path
         else
-            puts response.body   
+            puts response.body
         end
     end
     sleep 60
