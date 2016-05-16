@@ -33,7 +33,7 @@ FileUtils.mkdir_p uploaded_dir unless File.exists? uploaded_dir
 api_endpoint = "https://www.fenadoce.com.br/api/v1/realidade_aumentada_galeria_de_fotos.json"
 uri = URI(api_endpoint)
 
-RootCA = './cacert.pem'
+RootCA = File.expand_path('./cacert.pem')
 
 while true
     puts
@@ -60,7 +60,7 @@ while true
 
         http = Net::HTTP.new(uri.host, uri.port)
         http.use_ssl = true
-        http.ca_path = RootCA
+        http.ca_file = RootCA
         http.verify_mode = OpenSSL::SSL::VERIFY_PEER
         http.verify_depth = 5
         response = http.start {|http| http.request(request)}
