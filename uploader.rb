@@ -30,7 +30,7 @@ photos_dir = File.expand_path(ARGV[0] || '.')
 uploaded_dir = photos_dir + '/uploaded'
 FileUtils.mkdir_p uploaded_dir unless File.exists? uploaded_dir
 
-api_endpoint = "https://www.fenadoce.com.br/api/v1/realidade_aumentada_galeria_de_fotos.json"
+api_endpoint = config['url']
 uri = URI(api_endpoint)
 
 RootCA = File.expand_path('./cacert.pem')
