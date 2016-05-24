@@ -53,7 +53,7 @@ while true
         params = {}
         params['horario'] = photo_day+'/'+photo_month+'/'+photo_year+' '+photo_hour+':'+photo_minute+':'+photo_second
         params['imagem[_][upload]'] = 'remote'
-        params['imagem[_][url]'] = 'data:image/jpeg;base64,'+Base64.encode64(File.read(photo_path).chop)
+        params['imagem[_][url]'] = 'data:image/png;base64,'+Base64.encode64(File.read(photo_path).chop)
 
         request = Net::HTTP::Post.new(uri.path)
         request.basic_auth config['username'], config['password']
