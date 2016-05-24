@@ -38,7 +38,7 @@ RootCA = File.expand_path('./cacert.pem')
 while true
     puts
     puts DateTime.now
-    Dir[photos_dir+'/*.JPG'].each do |photo_path|
+    Dir[photos_dir+'/[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9].JPG'].each do |photo_path|
         puts photo_path
 
         photo_timestamp = File.basename(photo_path, '.JPG')
