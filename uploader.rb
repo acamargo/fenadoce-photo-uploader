@@ -53,7 +53,7 @@ while true
         params = {}
         params['horario'] = photo_day+'/'+photo_month+'/'+photo_year+' '+photo_hour+':'+photo_minute+':'+photo_second
         params['imagem[_][upload]'] = 'remote'
-        params['imagem[_][url]'] = 'data:image/png;base64,'+Base64.encode64(File.read(photo_path).chop)
+        params['imagem[_][url]'] = 'data:image/png;base64,'+Base64.encode64(File.open(photo_path, 'rb').read).chop
 
         request = Net::HTTP::Post.new(uri.path)
         request.basic_auth config['username'], config['password']
@@ -64,6 +64,7 @@ while true
         http.ca_file = RootCA
         http.verify_mode = OpenSSL::SSL::VERIFY_PEER
         http.verify_depth = 5
+        #http.set_debug_output($stdout)
         response = http.start {|http| http.request(request)}
         puts response.code
         if response.code.to_i == 201
