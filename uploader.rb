@@ -38,8 +38,10 @@ RootCA = File.expand_path('./cacert.pem')
 while true
     puts
     puts DateTime.now
-    Dir[photos_dir+'/[0-9][0-9][0-9][0-9]_[0-9][0-9]_[0-9][0-9]-[0-9][0-9]_[0-9][0-9]_[0-9][0-9].PNG'].each do |photo_path|
-        puts photo_path
+    files = Dir[photos_dir+'/[0-9][0-9][0-9][0-9]_[0-9][0-9]_[0-9][0-9]-[0-9][0-9]_[0-9][0-9]_[0-9][0-9].PNG']
+    files_total = files.length
+    files.each.with_index(1) do |photo_path, i|
+        puts "%s %04d/%04d %s" % [DateTime.now, i, files_total, photo_path]
 
         photo_timestamp = File.basename(photo_path, '.PNG')
         photo_timestamp.gsub!(/[^\d]/, '')
@@ -59,6 +61,8 @@ while true
         request.basic_auth config['username'], config['password']
         request.set_form_data(params)
 
+        start_time = Time.now
+
         http = Net::HTTP.new(uri.host, uri.port)
         http.use_ssl = true
         http.ca_file = RootCA
@@ -66,7 +70,11 @@ while true
         http.verify_depth = 5
         #http.set_debug_output($stdout)
         response = http.start {|http| http.request(request)}
-        puts response.code
+
+        end_time = Time.now
+
+        puts "%s %s %.3fs" % [DateTime.now, response.code, end_time - start_time]
+
         if response.code.to_i == 201
             destination_path = uploaded_dir + '/' +photo_year+'/'+photo_month+'/'+photo_day+'/'+photo_hour
             FileUtils.mkdir_p destination_path unless File.exists? destination_path
