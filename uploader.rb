@@ -84,5 +84,5 @@ while true
             puts response.body
         end
     end
-    sleep 60
+    sleep 30
 end
