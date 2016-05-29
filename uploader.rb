@@ -39,6 +39,7 @@ while true
     puts
     puts DateTime.now
     files = Dir[photos_dir+'/[0-9][0-9][0-9][0-9]_[0-9][0-9]_[0-9][0-9]-[0-9][0-9]_[0-9][0-9]_[0-9][0-9].PNG']
+    files.uniq! {|path| path[0..-7] } # process only the first image of each minute in this turn
     files_total = files.length
     files.each.with_index(1) do |photo_path, i|
         puts "%s %04d/%04d %s" % [DateTime.now, i, files_total, photo_path]
