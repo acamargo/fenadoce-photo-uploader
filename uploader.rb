@@ -50,7 +50,7 @@ while true
     files = Dir[photos_dir+'/[0-9][0-9][0-9][0-9]_[0-9][0-9]_[0-9][0-9]-[0-9][0-9]_[0-9][0-9]_[0-9][0-9].PNG']
     files.uniq! {|path| path[0..-7] } # process only the first image of each minute in this turn
     files_total = files.length
-    files.each.with_index(1) do |photo_path, i|
+    files.reverse.each.with_index(1) do |photo_path, i|
         log "%04d/%04d %s" % [i, files_total, photo_path]
 
         photo_timestamp = File.basename(photo_path, '.PNG')
