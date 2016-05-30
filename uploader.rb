@@ -17,6 +17,7 @@ require 'net/https'
 require 'uri'
 require 'base64'
 require 'date'
+require 'logger'
 
 if File.exist? 'uploader.yml'
   config = YAML.load_file('uploader.yml')
@@ -35,14 +36,22 @@ uri = URI(api_endpoint)
 
 RootCA = File.expand_path('./cacert.pem')
 
+$LOG = Logger.new(DateTime.now.strftime('%Y%m%d.log'))
+
+def log(msg)
+  $LOG.info msg
+  puts "%s %s" % [DateTime.now, msg]
+end
+
 while true
+  begin
     puts
     puts DateTime.now
     files = Dir[photos_dir+'/[0-9][0-9][0-9][0-9]_[0-9][0-9]_[0-9][0-9]-[0-9][0-9]_[0-9][0-9]_[0-9][0-9].PNG']
     files.uniq! {|path| path[0..-7] } # process only the first image of each minute in this turn
     files_total = files.length
     files.each.with_index(1) do |photo_path, i|
-        puts "%s %04d/%04d %s" % [DateTime.now, i, files_total, photo_path]
+        log "%04d/%04d %s" % [i, files_total, photo_path]
 
         photo_timestamp = File.basename(photo_path, '.PNG')
         photo_timestamp.gsub!(/[^\d]/, '')
@@ -74,15 +83,18 @@ while true
 
         end_time = Time.now
 
-        puts "%s %s %.3fs" % [DateTime.now, response.code, end_time - start_time]
+        log "%s %.3fs" % [response.code, end_time - start_time]
 
         if response.code.to_i == 201
             destination_path = uploaded_dir + '/' +photo_year+'/'+photo_month+'/'+photo_day+'/'+photo_hour
             FileUtils.mkdir_p destination_path unless File.exists? destination_path
             FileUtils.mv photo_path, destination_path
         else
-            puts response.body
+            log response.body
         end
     end
-    sleep 30
+  rescue StandardError => error
+    log error.to_s + "\n" + error.backtrace.join("\n")
+  end
+  sleep 30
 end
